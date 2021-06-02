@@ -3,7 +3,7 @@ const express = require("express");
 const bcrypt = require('bcryptjs');
 const cors = require("cors");
 const { getAllCustomers, createCustomer } = require('./db/queries/customers');
-const { checkUserPassword } = require('./db/queries/users');
+const { checkUserPassword, checkValidUser } = require('./db/queries/users');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -12,7 +12,6 @@ const cookieSession = require('cookie-session');
 const sessionConfig = {
   name: "session",
   secret: "aSecretForCookies!",
-  secureProxy: true
 }
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,15 +28,19 @@ db.connect();
 
 // Middleware Function to check if user is logged in by reading cookie
 const isLoggedIn = (req, res, next) => {
-  // if (req.session.user_id && req.session.username) {
-    next();
-  // } else {
-    // res.send("Unauthorized access.");
-  // }
+  checkValidUser(db, req.body.state.username)
+  .then(response => {
+    if (response.id === req.body.state.userId) {
+      next()
+    } else {
+      res.send("Unauthorized access.")
+    }
+  })
+  .catch(err => console.log(err))
 };
 
 // Endpoints
-app.get("/customers", isLoggedIn, (req, res) => {
+app.post("/customers", isLoggedIn, (req, res) => {
   getAllCustomers(db)
   .then(data => {
     res.json(data);
@@ -47,7 +50,7 @@ app.get("/customers", isLoggedIn, (req, res) => {
   })
 });
 
-app.post("/customers", isLoggedIn, (req, res) => {
+app.post("/customers/new", isLoggedIn, (req, res) => {
   const {createdBy, first, last, profession} = req.body;
   createCustomer(db, createdBy, first, last, profession)
   .then(response => {
