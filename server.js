@@ -29,11 +29,11 @@ db.connect();
 
 // Middleware Function to check if user is logged in by reading cookie
 const isLoggedIn = (req, res, next) => {
-  if (req.session.user_id && req.session.username) {
+  // if (req.session.user_id && req.session.username) {
     next();
-  } else {
-    res.send("Unauthorized access.");
-  }
+  // } else {
+    // res.send("Unauthorized access.");
+  // }
 };
 
 // Endpoints
