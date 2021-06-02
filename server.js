@@ -11,7 +11,8 @@ const salt = bcrypt.genSaltSync(10);
 const cookieSession = require('cookie-session');
 const sessionConfig = {
   name: "session",
-  secret: "aSecretForCookies!"
+  secret: "aSecretForCookies!",
+  secureProxy: true
 }
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
