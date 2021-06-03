@@ -18,4 +18,14 @@ const createCustomer = (db, createdBy, firstName, lastName, profession) => {
   .catch(err => err);
 }
 
-module.exports = { getAllCustomers, createCustomer };
+const deleteCustomer = (db, id) => {
+  return db.query(`
+    DELETE FROM customers
+    WHERE id = $1
+    RETURNING *
+  ;`, [id])
+  .then(response => response.rows[0])
+  .catch(err => err)
+}
+
+module.exports = { getAllCustomers, createCustomer, deleteCustomer };

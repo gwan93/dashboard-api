@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const bcrypt = require('bcryptjs');
 const cors = require("cors");
-const { getAllCustomers, createCustomer } = require('./db/queries/customers');
+const { getAllCustomers, createCustomer, deleteCustomer } = require('./db/queries/customers');
 const { checkUserPassword, checkValidUser } = require('./db/queries/users');
 
 const PORT = process.env.PORT || 3001;
@@ -55,6 +55,16 @@ app.post("/customers/new", isLoggedIn, (req, res) => {
   createCustomer(db, createdBy, first, last, profession)
   .then(response => {
     res.json(response);
+  })
+  .catch(err => {
+    res.json(err)
+  })
+})
+
+app.post("/customers/delete", isLoggedIn, (req, res) => {
+  deleteCustomer(db, req.body.id)
+  .then(response => {
+    res.json(response)
   })
   .catch(err => {
     res.json(err)
